@@ -1,0 +1,1 @@
+// Floating UI content script placeholder
