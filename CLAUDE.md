@@ -16,8 +16,10 @@ Live demo referenced by the README: https://template-guards.vercel.app
 (deployed outside this repo — see "Deployment" below).
 
 **Read this first: the repository is an early prototype, not a working
-application.** Most files are placeholders. Do not assume anything builds, runs,
-or is wired together. Details below.
+application.** The shipped, usable deliverable is the Markdown template corpus in
+`templates/` — copy-paste text, no code required. Everything else (components,
+extension, schema) is placeholder or unwired. Do not assume anything builds,
+runs, or is wired together. Details below.
 
 ## Actual repository state
 
@@ -26,6 +28,12 @@ or is wired together. Details below.
 ├── CLAUDE.md                             # this file
 ├── README.md                             # current, accurate project summary
 ├── Files                                 # STALE ARTIFACT — see warning below
+├── templates/                            # THE WORKING DELIVERABLE — 5 Markdown templates
+│   ├── chest-xr.md                       # Fleischner nodule pearl
+│   ├── head-ct-stroke.md                 # ASPECTS / early ischemic signs pearl
+│   ├── abdomen-ct.md                     # appendicitis secondary signs pearl
+│   ├── msk-xr.md                         # bone tumor matrix pearl
+│   └── pe-cta.md                         # RV strain pearl
 ├── components/                           # React components (2 of 3 are stubs)
 │   ├── DashboardPreview.tsx              # only real component (~36 lines)
 │   ├── TemplateGuardUploader.tsx         # 2-line placeholder
@@ -89,6 +97,53 @@ when the task actually calls for it, and say what you changed.
    are asked to deploy or extend this schema, raise RLS explicitly rather than
    extending the current pattern.
 
+## Template corpus (`templates/`)
+
+Five on-call templates, shipped by issues #6 and #7 and linked from the README's
+Quick Start table: `chest-xr`, `head-ct-stroke`, `abdomen-ct`, `msk-xr`,
+`pe-cta`. They are plain Markdown, meant to be copy-pasted into any dictation
+system — nothing reads them programmatically yet.
+
+Every file follows the same shape, and a new template should match it exactly
+rather than inventing a layout:
+
+```
+# <Exam> Fallback Template
+
+**Indication:** [ ]            # bracketed slots are operator fill-ins
+**Technique:** ...
+**Comparison:** [prior / none]
+
+**Findings:**
+- <organ system>: <normal-template sentence>
+
+**Impression:**
+1. <negative-study impression>
+
+---
+**ABR Pearl (toggle):** <one line>
+```
+
+Conventions worth preserving:
+
+- **Findings are written as the normal study**, one bullet per organ system, so
+  the resident deletes or edits rather than types from scratch. Impressions are
+  numbered and default to the negative read.
+- **Square brackets mark operator fill-ins** (`[prior / none]`,
+  `[stroke code / headache / trauma]`). Keep them; they are the friction budget.
+- **Exactly one `ABR Pearl (toggle):` line per file**, last, under a `---` rule.
+  The "(toggle)" marker is the seam for the not-yet-built ABR-mode UI — the
+  pearl must be separable from the dictated text by that line alone, so never
+  interleave teaching content into Findings or Impression.
+- Two templates carry an extra checklist block (`msk-xr`) or clinical-cue block
+  (`pe-cta`) between Findings and Impression. That is an accepted variation, not
+  the default.
+- Filenames are lower-kebab-case by exam, and the README's Quick Start table must
+  be updated in the same change as any added or renamed template.
+
+The clinical rules in "Clinical and privacy conventions" below apply in full to
+anything written here — a pearl is the highest-risk line in the repository.
+
 ## Data model
 
 `supabase/schema.sql` defines three tables:
@@ -106,12 +161,17 @@ when the task actually calls for it, and say what you changed.
   deliberately extending the set.
 
 The intended (documented, never implemented) Supabase setup also includes a
-storage bucket named `templates` and email-based Supabase Auth.
+storage bucket named `templates` and email-based Supabase Auth. Note the name
+collision: that bucket is for user-uploaded template files and has nothing to do
+with the committed `templates/` Markdown corpus. No committed code connects the
+two, and nothing populates `template_metadata` from `templates/`.
 
 ## Intended architecture
 
 The three surfaces the project is designed around — useful for placing new code,
-but only the second exists in any form:
+but only the second exists in any form. The `templates/` corpus sits outside all
+three by design: it is the manual fallback that works with no surface at all,
+which is why it shipped first.
 
 1. **Web app** — React/Next.js uploader, phrase converter, and analytics
    dashboard, deployed to Vercel. No Next.js scaffolding is committed; the
@@ -152,7 +212,10 @@ belongs in the repository.
   criteria from memory. If a real criterion is needed and you cannot verify it,
   leave a marked `TODO` and say so in your summary rather than guessing —
   plausible-but-wrong clinical guidance is the worst failure mode this project
-  has.
+  has. The five shipped pearls in `templates/` are the format to follow, not a
+  licence to add unsourced ones: if you write or edit a pearl, be able to name
+  the guideline it comes from, and say in your summary that you did not
+  independently verify it if you did not.
 - **Workflow non-interference is a product requirement, not a nicety.** The open
   issues state acceptance criteria of "loadable in <2 clicks" and "zero impact on
   basic dictation flow". A feature that adds friction to dictation has failed
@@ -160,19 +223,26 @@ belongs in the repository.
 
 ## Open work
 
-Three open issues, all authored by the repo owner and labelled `enhancement`.
-They are sequential — #4 explicitly builds on #2 and #3:
+All issues are authored by the repo owner and labelled `enhancement`. The
+template-curation line is done: **#2, #4, #6 and #7 are closed** — between them
+they shipped the five files in `templates/`.
 
-- **#2 — Multi-vendor PACS detection + high-yield fallback templates.** Detect
-  PACS/RIS vendor or template restrictions; ship 3–5 core exam templates (chest,
-  abdomen, MSK, neuro).
-- **#3 — ABR Core phrasing integration.** Embed 5–10 reusable high-yield
-  impression phrases per core domain; add an optional "ABR mode" toggle
-  surfacing teaching points without interrupting dictation.
-- **#4 — Ship core fallback set (Chest/Neuro/Abdomen) + ABR-mode toggle.** The
-  current highest-leverage item: curate 5–8 on-call-ready templates, embed the
-  ABR phrasing, add the toggle, document the on-call usage path, and provide a
-  documented export path for sharing with co-residents.
+What is actually open:
+
+- **#3 — ABR Core phrasing integration.** The one substantive open issue. Embed
+  5–10 reusable high-yield impression phrases per core domain (the intended
+  source is the private `ABR-Core-Mastery` repo), and add an optional "ABR mode"
+  toggle surfacing teaching points without interrupting dictation.
+- **#12–#17 — "Daily automation" issues.** A run of near-duplicate issues opened
+  one per day by an automation, all converging on the same ask: implement the ABR
+  teaching-mode toggle, and close the duplicates. Treat them as one item, not
+  six. Do not open another; if you are asked to work the backlog, the real task
+  behind all of them is the toggle.
+
+So there is effectively **one open piece of work: the ABR-mode toggle**, which
+needs a UI surface to live in — and no surface currently runs (see "Adding a
+toolchain"). The `templates/` corpus already marks the seam it would toggle: the
+trailing `**ABR Pearl (toggle):**` line in each file.
 
 Related repositories referenced by the README: `kavanthompson/ABR-Core-Mastery`
 (private — a verified question bank and domain chapters, the intended source for
@@ -185,13 +255,15 @@ private one to require access.
 **Git.** The default branch is `main`. Work on the feature branch you were
 assigned, commit with clear messages, and push with `git push -u origin
 <branch>`. Open a draft PR after pushing if one is not already open. The commit
-history is short and mostly documentation; follow the existing
-`type: summary` style (`docs: ...`) where it fits.
+history is short — documentation plus the template drops; messages mostly follow
+`type: summary` (`docs: ...`) or a plain imperative summary naming the issue it
+advances (`Add PE CTA fallback template ... (issue #7)`). Either fits.
 
 **Style.** There is no linter or formatter, so match the surrounding code: React
 function components with a default export, 2-space indentation, single quotes,
 semicolons, Tailwind utility classes for layout. `DashboardPreview.tsx` is the
-only meaningful style reference.
+only meaningful style reference for code; for template Markdown, copy the shape
+of an existing file in `templates/` exactly (see "Template corpus" above).
 
 **Scope.** The repo is small enough to read end to end — do that before changing
 anything, rather than pattern-matching from one file. Prefer replacing the
