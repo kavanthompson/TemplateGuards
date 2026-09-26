@@ -28,12 +28,14 @@ runs, or is wired together. Details below.
 ├── CLAUDE.md                             # this file
 ├── README.md                             # current, accurate project summary
 ├── Files                                 # STALE ARTIFACT — see warning below
-├── templates/                            # THE WORKING DELIVERABLE — 5 Markdown templates
+├── templates/                            # THE WORKING DELIVERABLE — 7 Markdown templates
 │   ├── chest-xr.md                       # Fleischner nodule pearl
 │   ├── head-ct-stroke.md                 # ASPECTS / early ischemic signs pearl
 │   ├── abdomen-ct.md                     # appendicitis secondary signs pearl
 │   ├── msk-xr.md                         # bone tumor matrix pearl
-│   └── pe-cta.md                         # RV strain pearl
+│   ├── pe-cta.md                         # RV strain pearl
+│   ├── cspine-xr.md                      # NEXUS / Canadian C-spine + instability pearl
+│   └── abdomen-xr.md                     # free air / SBO secondary signs pearl
 ├── components/                           # React components (2 of 3 are stubs)
 │   ├── DashboardPreview.tsx              # only real component (~36 lines)
 │   ├── TemplateGuardUploader.tsx         # 2-line placeholder
@@ -99,10 +101,12 @@ when the task actually calls for it, and say what you changed.
 
 ## Template corpus (`templates/`)
 
-Five on-call templates, shipped by issues #6 and #7 and linked from the README's
-Quick Start table: `chest-xr`, `head-ct-stroke`, `abdomen-ct`, `msk-xr`,
-`pe-cta`. They are plain Markdown, meant to be copy-pasted into any dictation
-system — nothing reads them programmatically yet.
+Seven on-call templates, all linked from the README's Quick Start table:
+`chest-xr`, `head-ct-stroke`, `abdomen-ct`, `msk-xr`, `pe-cta`, `cspine-xr`,
+`abdomen-xr`. The first five shipped via issues #6 and #7; `cspine-xr` and
+`abdomen-xr` were added later by the daily-automation line (see "Open work").
+They are plain Markdown, meant to be copy-pasted into any dictation system —
+nothing reads them programmatically yet.
 
 Every file follows the same shape, and a new template should match it exactly
 rather than inventing a layout:
@@ -135,9 +139,10 @@ Conventions worth preserving:
   The "(toggle)" marker is the seam for the not-yet-built ABR-mode UI — the
   pearl must be separable from the dictated text by that line alone, so never
   interleave teaching content into Findings or Impression.
-- Two templates carry an extra checklist block (`msk-xr`) or clinical-cue block
-  (`pe-cta`) between Findings and Impression. That is an accepted variation, not
-  the default.
+- Four templates carry an extra block between Findings and Impression: a
+  checklist (`msk-xr`, `cspine-xr` "Trauma Checklist", `abdomen-xr` "Secondary
+  Signs Checklist") or a clinical-cue block (`pe-cta`). That is an accepted
+  variation, not the default, and it still sits above the `---` pearl rule.
 - Filenames are lower-kebab-case by exam, and the README's Quick Start table must
   be updated in the same change as any added or renamed template.
 
@@ -212,7 +217,7 @@ belongs in the repository.
   criteria from memory. If a real criterion is needed and you cannot verify it,
   leave a marked `TODO` and say so in your summary rather than guessing —
   plausible-but-wrong clinical guidance is the worst failure mode this project
-  has. The five shipped pearls in `templates/` are the format to follow, not a
+  has. The seven shipped pearls in `templates/` are the format to follow, not a
   licence to add unsourced ones: if you write or edit a pearl, be able to name
   the guideline it comes from, and say in your summary that you did not
   independently verify it if you did not.
@@ -223,26 +228,28 @@ belongs in the repository.
 
 ## Open work
 
-All issues are authored by the repo owner and labelled `enhancement`. The
-template-curation line is done: **#2, #4, #6 and #7 are closed** — between them
-they shipped the five files in `templates/`.
+All issues are authored by the repo owner and labelled `enhancement`. Almost
+everything is closed: the template-curation line (**#2, #4, #6, #7**) and the
+ABR Core phrasing issue (**#3**, which shipped as the trailing pearl line now
+present in every template).
 
-What is actually open:
+- **The "Daily automation" run (#8 onward).** A long series of near-duplicate
+  issues opened one per day by an automation. Each restates a status digest and
+  proposes the same next step; older ones get closed as newer ones appear, so at
+  any moment typically only the latest is open. Treat the whole run as one item.
+  **Do not open another**, and do not work them individually — read the newest
+  for current status and act on the single ask behind all of them.
 
-- **#3 — ABR Core phrasing integration.** The one substantive open issue. Embed
-  5–10 reusable high-yield impression phrases per core domain (the intended
-  source is the private `ABR-Core-Mastery` repo), and add an optional "ABR mode"
-  toggle surfacing teaching points without interrupting dictation.
-- **#12–#17 — "Daily automation" issues.** A run of near-duplicate issues opened
-  one per day by an automation, all converging on the same ask: implement the ABR
-  teaching-mode toggle, and close the duplicates. Treat them as one item, not
-  six. Do not open another; if you are asked to work the backlog, the real task
-  behind all of them is the toggle.
+So there is effectively **one open piece of work: the ABR-mode toggle** — make
+the trailing pearl line optional during dictation. It needs a UI surface to live
+in, and no surface currently runs (see "Adding a toolchain"); the latest
+automation issue names `DashboardPreview.tsx` as the intended home, which is
+itself unwired (see "Known broken or misleading things", item 3). The
+`templates/` corpus already marks the seam it would toggle: the trailing
+`**ABR Pearl (toggle):**` line in each file.
 
-So there is effectively **one open piece of work: the ABR-mode toggle**, which
-needs a UI surface to live in — and no surface currently runs (see "Adding a
-toolchain"). The `templates/` corpus already marks the seam it would toggle: the
-trailing `**ABR Pearl (toggle):**` line in each file.
+The automation issues also carry a recurring secondary ask — cross-linking the
+pearls into `radiology-ai-skills` — which involves a repo outside this one.
 
 Related repositories referenced by the README: `kavanthompson/ABR-Core-Mastery`
 (private — a verified question bank and domain chapters, the intended source for
