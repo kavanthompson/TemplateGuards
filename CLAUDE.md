@@ -37,7 +37,7 @@ runs, or is wired together. Details below.
 │   ├── cspine-xr.md                      # NEXUS / Canadian C-spine + instability pearl
 │   └── abdomen-xr.md                     # free air / SBO secondary signs pearl
 ├── components/                           # React components (2 of 3 are stubs)
-│   ├── DashboardPreview.tsx              # only real component (~36 lines)
+│   ├── DashboardPreview.tsx              # only real component (~62 lines); holds the ABR-mode toggle
 │   ├── TemplateGuardUploader.tsx         # 2-line placeholder
 │   └── TemplatePhraseConverter.tsx       # 2-line placeholder
 ├── public/                               # Chrome extension (MV3), incomplete
@@ -88,7 +88,12 @@ when the task actually calls for it, and say what you changed.
    neither the components nor the `@/` path alias exist — and it fetches
    `/api/mock-usage`, which no route implements. The component renders its
    loading state forever. Its `usage` state is untyped (`useState(null)`), so it
-   would not typecheck under `strict` without a type.
+   would not typecheck under `strict` without a type. The ABR-mode toggle it now
+   carries (`abrMode`, default `true`) is presentational only: flipping it swaps
+   the button label and shows or hides an explanatory line. It does not read
+   `templates/`, and nothing appends or strips the trailing pearl line — the
+   in-component text saying pearls "will append to copied templates" describes
+   intent, not behaviour.
 
 4. **`supabase/schema.sql` has no Row Level Security.** All three tables are
    created without RLS enabled and without policies, despite `template_metadata`
@@ -240,13 +245,14 @@ present in every template).
   **Do not open another**, and do not work them individually — read the newest
   for current status and act on the single ask behind all of them.
 
-So there is effectively **one open piece of work: the ABR-mode toggle** — make
-the trailing pearl line optional during dictation. It needs a UI surface to live
-in, and no surface currently runs (see "Adding a toolchain"); the latest
-automation issue names `DashboardPreview.tsx` as the intended home, which is
-itself unwired (see "Known broken or misleading things", item 3). The
-`templates/` corpus already marks the seam it would toggle: the trailing
-`**ABR Pearl (toggle):**` line in each file.
+The **ABR-mode toggle** — the item the run had been proposing — landed on `main`
+in `f1d841e` as a toggle control inside `DashboardPreview.tsx`. What shipped is
+the UI half only: it flips a boolean and shows or hides a caption. Nothing yet
+reads `templates/` or strips the trailing `**ABR Pearl (toggle):**` line, and
+the component itself still does not run (see "Known broken or misleading
+things", item 3, and "Adding a toolchain"). So the seam the corpus marks is
+still unconsumed, and finishing the feature means wiring the toggle to the pearl
+line, not adding another control.
 
 The automation issues also carry a recurring secondary ask — cross-linking the
 pearls into `radiology-ai-skills` — which involves a repo outside this one.
