@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 
 export default function DashboardPreview() {
   const [usage, setUsage] = useState(null);
+  const [abrMode, setAbrMode] = useState(true); // default ON for passive ABR exposure
 
   useEffect(() => {
     fetch('/api/mock-usage')
@@ -17,6 +18,26 @@ export default function DashboardPreview() {
   return (
     <div className="max-w-3xl mx-auto p-6 space-y-4">
       <h2 className="text-2xl font-bold">📊 TemplateGuard Usage Summary</h2>
+
+      {/* ABR Teaching Mode Toggle */}
+      <Card>
+        <CardContent className="p-4 flex items-center justify-between">
+          <div>
+            <p className="font-semibold">ABR Teaching Mode</p>
+            <p className="text-sm text-muted-foreground">
+              Surfaces 1-line high-yield pearls at template bottom without interrupting dictation flow.
+            </p>
+          </div>
+          <Button
+            variant={abrMode ? "default" : "outline"}
+            onClick={() => setAbrMode(!abrMode)}
+            className="min-w-[100px]"
+          >
+            {abrMode ? "ON" : "OFF"}
+          </Button>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardContent className="space-y-2 p-4">
           <p><strong>Templates Used:</strong> {usage.templatesUsed}</p>
@@ -28,6 +49,11 @@ export default function DashboardPreview() {
             <li><strong>With Tool:</strong> {usage.reportsWithTool}</li>
             <li><strong>Without Tool:</strong> {usage.reportsWithoutTool}</li>
           </ul>
+          {abrMode && (
+            <p className="mt-3 text-sm italic text-blue-600 border-t pt-2">
+              ABR Mode active: Pearls from NEXUS/Canadian C-spine, free-air signs, Fleischner, ASPECTS, etc. will append to copied templates.
+            </p>
+          )}
         </CardContent>
       </Card>
       <Button className="w-full">📥 Download Shift Report</Button>
