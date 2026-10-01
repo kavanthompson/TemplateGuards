@@ -21,24 +21,27 @@ Ready-to-copy templates in `/templates/`:
 | PE CTA | `templates/pe-cta.md` | RV strain signs |
 | C-Spine XR (trauma) | `templates/cspine-xr.md` | NEXUS / Canadian C-spine + instability signs |
 | Non-contrast Abdomen XR | `templates/abdomen-xr.md` | Free air / SBO secondary signs |
+| Soft-tissue US | `templates/soft-tissue-us.md` | Abscess vs cellulitis / pseudoaneurysm |
 
 Copy-paste into any dictation system. Optional ABR teaching line at bottom (toggle-ready for future UI).
 
 ## Current status
-Early prototype (TypeScript). Dashboard preview, template uploader, phrase converter, and Supabase schema in place. **7 high-volume on-call templates** now live.
+Early prototype (TypeScript). Dashboard preview, template uploader, phrase converter, and Supabase schema in place. **8 high-volume on-call templates** now live.
 
 Open issues:
 - #2 Multi-vendor PACS detection + expanded fallback templates
 - #3 Full ABR Core phrasing integration (Fleischner, LI-RADS, BI-RADS, stroke)
 - #4 Ship remaining core set + ABR-mode UI toggle
+- #30 Soft-tissue US shipped 2026-10-01; trauma-series XR still open if desired
 
 ## Roadmap (clinical + ABR compound)
 1. ✅ Curate first 3 on-call ready templates (Chest XR, Neuro CT, Abdomen CT).
 2. ✅ Add MSK XR + PE CTA (next highest call volume).
 3. ✅ Add C-spine XR + Non-contrast Abdomen XR (trauma / obstruction volume).
-4. Embed more high-yield impression phrases from ABR-Core-Mastery.
-5. Optional “ABR teaching mode” that surfaces 1-line pearls without interrupting dictation.
-6. Tight linkage with ResidentShield ambient AI teaching and radiology-ai-skills collection.
+4. ✅ Add soft-tissue US (ED cellulitis vs abscess).
+5. Embed more high-yield impression phrases from ABR-Core-Mastery.
+6. Optional “ABR teaching mode” that surfaces 1-line pearls without interrupting dictation.
+7. Tight linkage with ResidentShield ambient AI teaching and radiology-ai-skills collection.
 
 ## Related repos
 - [ABR-Core-Mastery](https://github.com/kavanthompson/ABR-Core-Mastery) (private) – verified question bank + domain chapters
