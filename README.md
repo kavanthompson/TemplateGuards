@@ -24,13 +24,19 @@ Ready-to-copy templates in `/templates/`:
 | Soft-tissue US | `templates/soft-tissue-us.md` | Abscess vs cellulitis / pseudoaneurysm |
 | Trauma series XR | `templates/trauma-series-xr.md` | Deep sulcus PTX, pelvic ring, inadequate C-spine |
 
-Copy-paste into any dictation system. Optional ABR teaching line at bottom (toggle-ready for future UI).
+Copy-paste into any dictation system. ABR teaching pearls live after the `---` separator (toggle controls whether they appear on copy).
 
 ## Current status
 Early prototype (TypeScript). Dashboard preview, template uploader, phrase converter, and Supabase schema in place. **9 high-volume on-call templates** now live.
 
+ABR Teaching Mode:
+- Scaffold present: `lib/abrTeachingMode.ts` (split body/pearl, `templateForCopy`)
+- Dashboard toggle in `components/DashboardPreview.tsx` (defaults ON for passive exposure)
+- Pearls already embedded in all 9 templates
+- Open issue #31 tracks full copy-path integration so dictation stays clean when off
+
 Open issues:
-- #30 Closed 2026-10-03: soft-tissue US and trauma-series XR both shipped.
+- #31 ABR teaching-mode toggle (one pearl, no dictation interrupt)
 
 ## Roadmap (clinical + ABR compound)
 1. ✅ Curate first 3 on-call ready templates (Chest XR, Neuro CT, Abdomen CT).
@@ -39,7 +45,7 @@ Open issues:
 4. ✅ Add soft-tissue US (ED cellulitis vs abscess).
 5. ✅ Add portable trauma-series XR (chest + pelvis + C-spine).
 6. Embed more high-yield impression phrases from ABR-Core-Mastery.
-7. Optional “ABR teaching mode” that surfaces 1-line pearls without interrupting dictation.
+7. Optional “ABR teaching mode” that surfaces 1-line pearls without interrupting dictation. ← **in progress (scaffold + toggle live)**
 8. Tight linkage with ResidentShield ambient AI teaching and radiology-ai-skills collection.
 
 ## Related repos
